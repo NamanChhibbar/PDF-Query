@@ -20,7 +20,8 @@ class PDFQuery:
     self,
     openai_key: str,
     openai_model: str,
-    pdf_path: str
+    pdf_path: str,
+    negative_output: str
   ) -> None:
     
     # Initialize the OpenAI client
@@ -29,7 +30,7 @@ class PDFQuery:
 
     # Extract text from the PDF and create system prompt
     pdf_text = extract_text(pdf_path)
-    self.system_prompt = f'You will receive a some queries and text from a PDF. Your task is to answer the query based on the text. If the query cannot be answered, respond with "Sorry, I didn’t understand your question. Do you want to connect with a live agent?"\n\nText from the PDF is:\n\n{pdf_text}'
+    self.system_prompt = f'You will receive a some queries and text from a PDF. Your task is to answer the query based on the text. If the query cannot be answered, respond with "{negative_output}"\n\nText from the PDF is:\n\n{pdf_text}'
 
     # Initialize previous messages
     self.messages = [{'role': 'system', 'content': self.system_prompt}]

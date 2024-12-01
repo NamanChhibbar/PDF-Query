@@ -1,4 +1,4 @@
-from configs import OPENAI_KEY, OPENAI_MODEL
+from configs import OPENAI_KEY, OPENAI_MODEL, NEGATIVE_OUTPUT
 from utils import PDFQuery
 
 def main() -> None:
@@ -14,7 +14,8 @@ def main() -> None:
         pdf_query = PDFQuery(
           openai_key=OPENAI_KEY,
           openai_model=OPENAI_MODEL,
-          pdf_path=pdf_path
+          pdf_path=pdf_path,
+          negative_output=NEGATIVE_OUTPUT
         )
       except:
         print('Invalid path. Please try again.', end='\n\n')

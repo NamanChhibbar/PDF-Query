@@ -3,3 +3,4 @@
 
 OPENAI_KEY = ''
 OPENAI_MODEL = ''
+NEGATIVE_OUTPUT = 'Sorry, I didn’t understand your question. Do you want to connect with a live agent?'
