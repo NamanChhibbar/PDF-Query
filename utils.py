@@ -7,48 +7,45 @@ def extract_text(pdf_path: str) -> str:
     # Create a PdfReader object
     reader = PdfReader(pdf_path)
 
-    text = '-' * 100
-    for page in reader.pages:
+    # Extract text from each page and strip whitespaces
+    texts = [page.extract_text().strip() for page in reader.pages]
 
-      # Extract text from the page
-      page_text = page.extract_text()
-      page_text = page_text.strip()
-
-      # Append the text to the final text
-      text = f'{text}\n\n{page_text}'
-
-    return text
+    # Join the text from all pages
+    return '\n\n'.join(texts)
 
 
 class PDFQuery:
 
-  SYSTEM_MESSAGE = 'You will reeceive a query and text from a PDF. The query is followed by the text extracted from the PDF and is separated by multiple dashes ("-"). Your task is to answer the query based on the text. If the query cannot be answered, respond with "Sorry, I didn’t understand your question. Do you want to connect with a live agent?"'
-
   def __init__(
     self,
     openai_key: str,
-    openai_model: str
+    openai_model: str,
+    pdf_path: str
   ) -> None:
     
+    # Initialize the OpenAI client
     self.openai_client = OpenAI(api_key=openai_key)
     self.openai_model = openai_model
+
+    # Extract text from the PDF and create system prompt
+    pdf_text = extract_text(pdf_path)
+    self.system_prompt = f'You will receive a some queries and text from a PDF. Your task is to answer the query based on the text. If the query cannot be answered, respond with "Sorry, I didn’t understand your question. Do you want to connect with a live agent?"\n\nText from the PDF is:\n\n{pdf_text}'
+
+    # Initialize previous messages
+    self.messages = [{'role': 'system', 'content': self.system_prompt}]
   
   def query(
     self,
-    query: str,
-    pdf_path: str
+    query: str
   ) -> str:
+    
+    self.messages.append({'role': 'user', 'content': query})
 
-    pdf_text = extract_text(pdf_path)
-
-    prompt = f'{query}\n\n{pdf_text}'
-
-    completion = self.openai_client.chat.completions.create(
+    content = self.openai_client.chat.completions.create(
       model=self.openai_model,
-      messages=[
-        {'role': 'system', 'content': PDFQuery.SYSTEM_MESSAGE},
-        {'role': 'user', 'content': prompt}
-      ]
-    )
+      messages=self.messages
+    ).choices[0].message.content
 
-    return completion.choices[0].message.content
+    self.messages.append({'role': 'assistant', 'content': content})
+
+    return content
