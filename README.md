@@ -34,7 +34,7 @@ deactivate
 Create `configs.py` in the project directory and copy contents from [this](configs_template.py) file.
 Replace the values with your own before running the program.
 
-## Entering the Query loop
+## Entering the Query Loop
 
 After activating the virtual environment and initializing the configurations, run the following to enter the query loop (make sure you are in the project directory):
 
